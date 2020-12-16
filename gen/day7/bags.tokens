@@ -1,0 +1,12 @@
+T__0=1
+T__1=2
+WS=3
+BAGS=4
+CONTAIN=5
+NO_OTHER_BAGS=6
+INT=7
+COLOR=8
+'.'=1
+'\n'=2
+'contain'=5
+'no other bags'=6

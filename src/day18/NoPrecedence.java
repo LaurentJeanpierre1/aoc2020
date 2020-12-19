@@ -7,7 +7,7 @@ public class NoPrecedence {
   private static final long NOVAL = -123456;
 
   public static void main(String[] args) throws IOException {
-    BufferedReader read = new BufferedReader(new InputStreamReader(NoPrecedence.class.getResourceAsStream("data.txt")));
+    BufferedReader read = new BufferedReader(new InputStreamReader(NoPrecedence.class.getResourceAsStream("input.txt")));
     long sum = 0;
     while (true) {
       String line = read.readLine();

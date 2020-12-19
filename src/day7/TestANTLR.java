@@ -1,10 +1,10 @@
 package day7;
-
+/*
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-
+*/
 import java.io.IOException;
 
 public class TestANTLR {

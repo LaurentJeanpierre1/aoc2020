@@ -1,33 +1,64 @@
 package day18;
 
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+
 import java.io.*;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class Precedence {
+@State(Scope.Benchmark)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
+@Fork(value = 2,
+    jvmArgsAppend = {})
+@Warmup(iterations = 1, time = 5)
+@Measurement(iterations = 3, time = 3)
+public class Precedence2 {
   private static final long NOVAL = -123456;
+  private List<String> file;
 
-  public static void main(String[] args) throws IOException {
-    BufferedReader read = new BufferedReader(new InputStreamReader(Precedence.class.getResourceAsStream("input.txt")));
-    var file = Files.readAllLines(Paths.get("day18/input.txt"));
+  public static void main(String[] args) {
+    Options opt = new OptionsBuilder().include(Precedence2.class.getSimpleName()).build();
+
+    try {
+      new Runner(opt).run();
+    } catch (RunnerException e) {
+      e.printStackTrace();
+    }
+  } // main
+
+  @Benchmark
+  public void measurePrecedence2() {
+    new Precedence2();
+  }
+
+  public Precedence2() {
+    try {
+      file = Files.readAllLines(Paths.get("src/day18/input.txt"));
+    }catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Benchmark
+  public long compute() {
     long sum = 0;
-    long time = System.nanoTime();
-    while (true) {
-      String line = read.readLine();
-
-      if (line == null) break;
-
+    //long time = System.nanoTime();
+    for (String line : file) {
       long val = analyse(line);
-      //System.out.printf("%s = %d\n",line, val);
       sum += val;
     } // while more lines
-    time = System.nanoTime() - time;
-    System.out.printf("\nSum = %d in %f ms\n", sum, time/1000000.);
-  } // main
+    //time = System.nanoTime() - time;
+    //System.out.printf("\nSum = %d in %f ms\n", sum, time / 1000000.);
+    return sum;
+  }
 
   private static long analyse(String line) {
     Reader read = new InputStreamReader(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)));

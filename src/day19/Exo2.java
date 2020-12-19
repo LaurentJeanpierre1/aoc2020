@@ -6,18 +6,18 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Exo {
+public class Exo2 {
   private char match;
-  List<List<Exo>> alternatives = new ArrayList<>();
+  List<List<Exo2>> alternatives = new ArrayList<>();
 
-  public Exo(Map<Integer, String[]> rules, int i) {
+  public Exo2(Map<Integer, String[]> rules, int i) {
     String[] rule = rules.get(i);
     if (rule.length == 1 && rule[0].startsWith("\"") && rule[0].endsWith("\"")) {
       alternatives = null;
       match = rule[0].charAt(1);
     } else {
       for (String s : rule) {
-        ArrayList<Exo> sequence = new ArrayList<>();
+        ArrayList<Exo2> sequence = new ArrayList<>();
         String[] parts = s.split(" +");
         for (String part : parts) {
           try {
@@ -25,7 +25,7 @@ public class Exo {
             if (j==i)
               sequence.add(this);
             else
-              sequence.add(new Exo(rules, j));
+              sequence.add(new Exo2(rules, j));
           } catch (NumberFormatException e) {
             e.printStackTrace();
           }
@@ -35,28 +35,39 @@ public class Exo {
     } // if ! terminal
   } // Exo(...)
 
-  public int matches(String chaine, int from) {
+  public List<Integer> matches(String chaine, int from) {
     if (from>=chaine.length())
-      return -1;
+      return List.of();
     else if (alternatives == null)
       if (chaine.charAt(from) == match)
-        return from+1;
+        return List.of(from+1);
       else
-        return -1;
+        return List.of();
     else {
+      ArrayList<Integer> res = new ArrayList<>();
       for (var seq : alternatives) {
-        int idx = from;
-        for (Exo next : seq) {
-          idx = next.matches(chaine, idx);
-          if (idx == -1) break;
-        }
-        if (idx != -1) return idx;
+        List<Integer> idx = matchSeq(seq,0,from, chaine);
+        res.addAll(idx);
       }
-      return -1;
+      return res;
     }
   }
+
+  private List<Integer> matchSeq(List<Exo2> seq, int index, int from, String chaine) {
+    if (index >= seq.size())
+      return List.of(from);
+    List<Integer> next = seq.get(index).matches(chaine, from);
+    if (index == seq.size()-1)
+      return next;
+    List<Integer> res = new ArrayList<>();
+    for (int nextFrom : next) {
+      res.addAll(matchSeq(seq, index+1, nextFrom, chaine));
+    }
+    return res;
+  }
+
   public static void main(String[] args) throws IOException {
-    BufferedReader read = new BufferedReader(new InputStreamReader(Exo.class.getResourceAsStream("ex2b.txt")));
+    BufferedReader read = new BufferedReader(new InputStreamReader(Exo2.class.getResourceAsStream("data2.txt")));
 
     var lines = read.lines().collect(Collectors.toList());
     ListIterator<String> ite = lines.listIterator();
@@ -70,13 +81,13 @@ public class Exo {
     List<String> messages = new ArrayList<>();
     ite.forEachRemaining(messages::add);
 
-    Exo recog = new Exo(rules, 0);
+    Exo2 recog = new Exo2(rules, 0);
 
-    long nb = messages.stream().filter(s->recog.matches(s, 0)==s.length()).peek(System.out::println).count();
+    long nb = messages.stream().filter(s->recog.matches(s, 0).contains(s.length())).peek(System.out::println).count();
 
     System.out.printf("Nb=%d\n",nb);
 
-    int test = recog.matches("babbbbaabbbbbabbbbbbaabaaabaaa", 0);
+    var test = recog.matches("babbbbaabbbbbabbbbbbaabaaabaaa", 0);
     System.out.println(test);
   } // main
 } // Exo

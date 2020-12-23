@@ -56,8 +56,10 @@ public class Exo {
       tiles.add(new Tile(ite,10));
     } // while more lines
 
+    long time = System.nanoTime();
     Exo exo = new Exo(tiles, 12, 12);
-
+    time -= System.nanoTime();
     Exo2 exo2 = new Exo2(exo);
+    System.out.printf("time to puzzle : %f ms", time/-1000000.);
   } // main
 } // Exo
